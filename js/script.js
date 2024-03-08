@@ -86,3 +86,25 @@ function validateEmail(email) {
   var re = /\S+@\S+\.\S+/;
   return re.test(email);
 }
+
+$(document).ready(function () {
+  $("#logoutBtn").click(function () {
+    var rememberedEmail = getCookie("remember_email");
+    var rememberedPassword = getCookie("remember_password");
+
+    if (rememberedEmail && rememberedPassword) {
+      $("#exampleInputEmail1").val(rememberedEmail);
+      $("#exampleInputPassword1").val(rememberedPassword);
+    } 
+  });
+});
+function getCookie(name) {
+  var cookies = document.cookie.split(";");
+  for (var i = 0; i < cookies.length; i++) {
+    var cookie = cookies[i].trim();
+    if (cookie.indexOf(name + "=") === 0) {
+      return cookie.substring(name.length + 1);
+    }
+  }
+  return "";
+}

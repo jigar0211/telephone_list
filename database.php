@@ -5,6 +5,7 @@ define('USERNAME', 'root');
 define('PASSWORD', '');
 error_reporting(E_ALL);
 error_reporting(E_ERROR);
+
 class Database
 {
     private $conn;
@@ -197,7 +198,7 @@ class Database
 
         $int_qry->execute($array);
 
-        return $int_qry->fetchAll(PDO::FETCH_OBJ);
+        return $int_qry->fetch(PDO::FETCH_ASSOC);
     }
 
     public function fetch($tablename, $id)

@@ -2,26 +2,26 @@
 include 'include/header.php';
 session_start();
 if (!isset($_SESSION['user_id'])) {
-    header('Location: index.php'); 
+    header('Location: index.php');
     exit;
 }
 ?>
 
 <section class="user-list-table">
     <div class="container mt-5 border shadow p-3 mb-5 bg-white rounded">
+        <div class="col row d-flex justify-content-between mt-1">
+            <h2 class="font-weight-bold">User List - Table</h2>
+
+            <form class="form-inline" action="user_list.php" method="get">
+                <input class="form-control mr-sm-2" type="search" value="<?php echo isset($_GET['searchQuery']) ? $_GET['searchQuery'] : ''; ?>" placeholder="Search" aria-label="Search" id="searchInput" name="searchQuery">
+                <button class="btn btn-primary my-2 my-sm-0" type="submit">Search</button>
+            </form>
+
+            <button type="button" class="btn btn-primary" id="addUserBtn">
+                <i class="fas fa-user-plus"></i> Add User
+            </button>
+        </div>
         <div class="table-responsive">
-            <div class="col row d-flex justify-content-between mt-1">
-                <h2 class="font-weight-bold">User List - Table</h2>
-
-                <form class="form-inline" action="user_list.php" method="get">
-                    <input class="form-control mr-sm-2" type="search" value="<?php echo isset($_GET['searchQuery']) ? $_GET['searchQuery'] : ''; ?>" placeholder="Search" aria-label="Search" id="searchInput" name="searchQuery">
-                    <button class="btn btn-primary my-2 my-sm-0" type="submit">Search</button>
-                </form>
-
-                <button type="button" class="btn btn-primary" id="addUserBtn">
-                    <i class="fas fa-user-plus"></i> Add User
-                </button>
-            </div>
             <table class="table table-hover mt-3">
                 <thead class="sticky-header">
                     <tr>
@@ -144,37 +144,46 @@ if (!isset($_SESSION['user_id'])) {
                     <input type="hidden" name="userId" id="userId" />
                     <div class="form-row">
                         <div class="form-group col-md-6">
-                            <label for="name">First Name</label>
+                            <label for="name" class="font-weight-bold">First Name</label>
                             <input type="text" class="form-control" name="firstname" id="firstName" placeholder="Enter First Name">
                             <br><span id="firstname-error" class="error-message"></span>
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="lastname">Last Name</label>
+                            <label for="lastname" class="font-weight-bold">Last Name</label>
                             <input type="text" class="form-control" name="lastName" id="lastName" placeholder="Enter Last Name">
                             <br><span id="lastname-error" class="error-message"></span>
                         </div>
                         <div class="form-group col-md-12">
-                            <label for="email">Email</label>
+                            <label for="email" class="font-weight-bold">Email</label>
                             <input type="email" class="form-control" name="email" id="email" placeholder="Enter Email">
                             <br><span id="email-error" class="error-message"></span>
                         </div>
                         <div class="form-group col-md-12">
-                            <label for="phone">Phone</label>
+                            <label for="phone" class="font-weight-bold">Phone</label>
                             <input type="number" class="form-control" name="phone" id="phone" placeholder="Ex. +91 xxxx xxx xxx">
                             <br><span id="phone-error" class="error-message"></span>
                         </div>
                         <div class="form-group col-md-12">
-                            <label for="password">Password</label>
-                            <input type="password" class="form-control" name="password" id="password" placeholder="Password">
+                            <label for="password" class="font-weight-bold">Password</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" name="password" id="password" placeholder="Password">
+                                <div class="input-group-append" style="display: flex; justify-content: center; align-items: center;">
+                                    <span class="input-group-text text-center">
+                                        <button type="button" id="peekButton" style="background: none; border: 0;">
+                                            <i id="peekIcon" class="fas fa-eye"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
                             <br><span id="password-error" class="error-message"></span>
                         </div>
                         <div class="form-group col-md-12">
-                            <label for="confirmPassword">Confirm Password</label>
+                            <label for="confirmPassword" class="font-weight-bold">Confirm Password</label>
                             <input type="password" class="form-control" id="confirmPassword" placeholder="Repeat the Password">
                             <br><span id="cpassword-error" class="error-message"></span>
                         </div>
                         <div class="form-group col-md-12">
-                            <label for="photo">Upload Image</label>
+                            <label for="photo" class="font-weight-bold">Upload Image</label>
                             <input type="file" class="form-control-file border rounded p-1" name="photo" id="photo">
                             <br><span id="photo-error" class="error-message"></span>
                             <img src="" id="photo-preview" style="max-width: 100%; display: none;">
@@ -220,6 +229,7 @@ if (!isset($_SESSION['user_id'])) {
             modal.find('#lastName').val('');
             modal.find('#email').val('');
             modal.find('#phone').val('');
+            modal.find('#password').val('');
             modal.find('#photo-preview').attr('src', '').show();
             modal.modal('show');
             return false;
@@ -231,6 +241,7 @@ if (!isset($_SESSION['user_id'])) {
             var lastName = $(this).data('lastname');
             var email = $(this).data('email');
             var phone = $(this).data('phone');
+            var password = $(this).data('password');
             var photo = $(this).data('photo');
 
             var modal = $("#userModal");
@@ -241,6 +252,7 @@ if (!isset($_SESSION['user_id'])) {
             modal.find('#lastName').val(lastName);
             modal.find('#email').val(email);
             modal.find('#phone').val(phone);
+            modal.find('#password').val(password);
             modal.find('#photo-preview').attr('src', photo).show();
             modal.modal('show');
             return false;
@@ -295,6 +307,21 @@ if (!isset($_SESSION['user_id'])) {
                     });
                 }
             });
+        });
+    });
+    $(document).ready(function() {
+        const $passwordInput = $("#password");
+        const $peekButton = $("#peekButton");
+        const $peekIcon = $("#peekIcon");
+
+        $peekButton.on("click", function() {
+            if ($passwordInput.attr("type") === "password") {
+                $passwordInput.attr("type", "text");
+                $peekIcon.removeClass("fa-eye").addClass("fa-eye-slash");
+            } else {
+                $passwordInput.attr("type", "password");
+                $peekIcon.removeClass("fa-eye-slash").addClass("fa-eye");
+            }
         });
     });
 </script>
